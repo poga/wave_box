@@ -1,5 +1,5 @@
 module WaveBox
-  module Generator
+  module GenerateWave
 
     def generate(wave, options = {})
       default_options = { :time => Time.now }
@@ -21,7 +21,7 @@ module WaveBox
     end
 
     module ClassMethods
-      def wave_generator(config)
+      def generate_wave(config)
         raise ArgumentError, "Missing redis config" unless config[:redis]
         raise ArgumentError, "Missing id lambda" unless config[:id]
 

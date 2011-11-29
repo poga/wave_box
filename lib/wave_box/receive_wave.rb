@@ -1,5 +1,5 @@
 module WaveBox
-  module Receiver
+  module ReceiveWave
 
     def receive(wave, options = {})
       default_options = { :time => Time.now }
@@ -13,7 +13,7 @@ module WaveBox
     end
 
     module ClassMethods
-      def wave_receiver(config)
+      def receive_wave(config)
         raise ArgumentError, "Missing redis config" unless config[:redis]
         raise ArgumentError, "Missing id lambda" unless config[:id]
 

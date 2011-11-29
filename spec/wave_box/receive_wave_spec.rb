@@ -1,14 +1,14 @@
 require "spec_helper"
 require 'mock_redis'
 
-describe WaveBox::Receiver do
+describe WaveBox::ReceiveWave do
 
   it "should raise an argument error if no redis config is given" do
     lambda do
       class A
-        include WaveBox::Receiver
+        include WaveBox::ReceiveWave
 
-        wave_receiver :id => lambda { self.object_id }
+        receive_wave :id => lambda { self.object_id }
       end
     end.must_raise ArgumentError
   end
@@ -16,9 +16,9 @@ describe WaveBox::Receiver do
   it "should raise an ArgumentError if no box_id config is given" do
     lambda do
       class A
-        include WaveBox::Receiver
+        include WaveBox::ReceiveWave
 
-        wave_receiver :redis => MockRedis.new
+        receive_wave :redis => MockRedis.new
       end
     end.must_raise ArgumentError
   end
@@ -26,14 +26,14 @@ describe WaveBox::Receiver do
   describe "A normal receiver usage" do
     before do
       class User
-        include WaveBox::Receiver
+        include WaveBox::ReceiveWave
 
-        wave_receiver :redis => MockRedis.new,
-                      :expire => 60*10,
-                      :max_size => 10,
-                      # You have to specify a box id which
-                      # is unique among all receiver
-                      :id => lambda { self.object_id }
+        receive_wave :redis => MockRedis.new,
+                     :expire => 60*10,
+                     :max_size => 10,
+                     # You have to specify a box id which
+                     # is unique among all receiver
+                     :id => lambda { self.object_id }
       end
 
       @user = User.new

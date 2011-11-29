@@ -1,5 +1,5 @@
 module WaveBox
-  autoload :Receiver        , 'wave_box/receiver'
+  autoload :ReceiveWave        , 'wave_box/receive_wave'
   autoload :Box, 'wave_box/box'
-  autoload :Generator  , 'wave_box/generator'
+  autoload :GenerateWave  , 'wave_box/generate_wave'
 end
