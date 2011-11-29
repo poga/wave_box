@@ -53,11 +53,11 @@ describe WaveBox::GenerateWave do
           include WaveBox::ReceiveWave
 
           receive_wave :redis => MockRedis.new,
-                        :expire => 60*10,
-                        :max_size => 10,
-                        # You have to specify a box id which
-                        # is unique among all receiver
-                        :id => lambda { self.object_id }
+                       :expire => 60*10,
+                       :max_size => 10,
+                       # You have to specify a box id which
+                       # is unique among all receiver
+                       :id => lambda { self.object_id }
         end
         @receiver = Receiver.new
         @wave = "foo"
