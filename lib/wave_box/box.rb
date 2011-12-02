@@ -27,7 +27,8 @@ module WaveBox
 
     private
 
-    # TODO: Current encode/decode solution sucks
+    # TODO: Current encode/decode solution sucks,
+    # it create too much storage overhead
     def encode(str)
       "#{str}:#{Time.now.to_i}:#{rand.to_s.to_f}"
     end

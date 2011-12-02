@@ -1,45 +1,54 @@
 module WaveBox
   module GenerateWave
-
-    def generate(wave, options = {})
-      default_options = { :time => Time.now }
-      options = default_options.merge(options)
-
-      wave_outbox.push wave, options[:time]
-
-      if options[:to].respond_to? :each
-        options[:to].each do |receiver|
-          receiver.receive(wave, options.reject { |k,v| k == :to })
-        end
+    def method_missing(method, *args, &block)
+      if method.to_s =~ /generated_(\w+)_after/
+        generated_after( $1, *args )
+      elsif method.to_s =~ /generate_(\w+)/
+        generate( $1, *args)
       else
-        options[:to].receive(wave, options.reject { |k,v| k == :to })
+        super
       end
     end
 
-    def generated_after(time)
-      wave_outbox.after(time)
+    def generate(name, wave, receiver, time = Time.now)
+      send("#{name}_outbox").push wave, time
+
+      if receiver.respond_to? :each
+        receiver.each do |rec|
+          rec.receive(name, wave, time)
+        end
+      else
+        receiver.receive(name, wave, time)
+      end
+    end
+
+    def generated_after(name, time)
+      send("#{name}_outbox").after(time)
     end
 
     module ClassMethods
       def generate_wave(config)
-        raise ArgumentError, "Missing redis config" unless config[:redis]
+        raise ArgumentError, "Missing redis" unless config[:redis]
         raise ArgumentError, "Missing id lambda" unless config[:id]
+        raise ArgumentError, "Missing wave name" unless config[:name]
 
         [:redis, :expire, :max_size].each do |c|
-          define_method "wave_outbox_#{c}" do config[c] end
+          define_method "#{config[:name]}_outbox_#{c}" do config[c] end
         end
 
+        define_method "#{config[:name]}_outbox_key" do "wave:#{config[:name]}:outbox:#{send("#{config[:name]}_outbox_id")}" end
+
         class_eval <<-RUBY
-          def wave_outbox
+          def #{config[:name]}_outbox
             @wave_outbox ||= WaveBox::Box.new({
-                                  :redis => wave_outbox_redis,
-                                  :key => wave_outbox_key,
-                                  :expire => wave_outbox_expire,
-                                  :max_size => wave_outbox_max_size})
+                                :redis => #{config[:name]}_outbox_redis,
+                                :key => #{config[:name]}_outbox_key,
+                                :expire => #{config[:name]}_outbox_expire,
+                                :max_size => #{config[:name]}_outbox_max_size})
           end
         RUBY
 
-        define_method "wave_outbox_id", config[:id]
+        define_method "#{config[:name]}_outbox_id", config[:id]
       end
     end
 
@@ -47,10 +56,5 @@ module WaveBox
       host.extend ClassMethods
     end
 
-    private
-
-    def wave_outbox_key
-      return "wave:box:out:#{wave_outbox_id}"
-    end
   end
 end

@@ -28,7 +28,8 @@ describe WaveBox::ReceiveWave do
       class User
         include WaveBox::ReceiveWave
 
-        receive_wave :redis => MockRedis.new,
+        receive_wave :name => "message",
+                     :redis => MockRedis.new,
                      :expire => 60*10,
                      :max_size => 10,
                      # You have to specify a box id which
@@ -41,22 +42,22 @@ describe WaveBox::ReceiveWave do
     end
 
     it "should save the box id lambda and call it when needed" do
-      @user.wave_inbox_id.must_equal @user.object_id
+      @user.message_inbox_id.must_equal @user.object_id
     end
 
     it "should have an inbox" do
-      @user.wave_inbox.wont_be_nil
+      @user.message_inbox.wont_be_nil
     end
 
     it "should be able to receive wave and save it to its inbox" do
-      @user.receive(@wave)
+      @user.receive("message", @wave)
 
-      @user.wave_inbox.size.must_equal 1
-      @user.wave_inbox.after(0)[0].must_equal @wave
+      @user.message_inbox.size.must_equal 1
+      @user.message_inbox.after(0)[0].must_equal @wave
     end
 
     it "should have a helper to retrieve inbox after..." do
-      @user.received_after(0).must_equal @user.wave_inbox.after(0)
+      @user.received_after("message", 0).must_equal @user.message_inbox.after(0)
     end
   end
 end
