@@ -122,6 +122,10 @@ describe WaveBox::GenerateWave do
         @receiver.message_inbox.after(0)[0].must_equal @wave
       end
 
+      it "should respond to method missing helpers" do
+        @user.respond_to?(:generate_message).must_equal true
+        @user.respond_to?(:generated_message_after).must_equal true
+      end
     end
 
   end

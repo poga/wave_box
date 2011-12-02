@@ -10,6 +10,11 @@ module WaveBox
       end
     end
 
+    # method missing with good manner
+    def respond_to_missing?(method, *)
+      (method =~ /generated_(\w+)_after/) || (method =~ /generate_(\w+)/) || super
+    end
+
     def generate(name, wave, receiver, time = Time.now)
       send("#{name}_outbox").push wave, time
 
