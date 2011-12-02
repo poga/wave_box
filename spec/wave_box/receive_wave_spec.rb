@@ -2,13 +2,24 @@ require "spec_helper"
 require 'mock_redis'
 
 describe WaveBox::ReceiveWave do
+  it "should raise an argument error if no name given" do
+    lambda do 
+      class A
+        include WaveBox::ReceiveWave
+
+        receive_wave :id => lambda { self.object_id },
+                     :redis => MockRedis.new
+      end
+    end.must_raise ArgumentError
+  end
 
   it "should raise an argument error if no redis config is given" do
     lambda do
       class A
         include WaveBox::ReceiveWave
 
-        receive_wave :id => lambda { self.object_id }
+        receive_wave :id => lambda { self.object_id },
+                     :name => "message"
       end
     end.must_raise ArgumentError
   end
@@ -18,7 +29,8 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        receive_wave :redis => MockRedis.new
+        receive_wave :redis => MockRedis.new,
+                     :name => "message"
       end
     end.must_raise ArgumentError
   end
