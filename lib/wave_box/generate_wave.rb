@@ -37,23 +37,24 @@ module WaveBox
         raise ArgumentError, "Missing id lambda" unless config[:id]
         raise ArgumentError, "Missing wave name" unless config[:name]
 
+        name = config[:name]
         [:redis, :expire, :max_size].each do |c|
-          define_method "#{config[:name]}_outbox_#{c}" do config[c] end
+          define_method "#{name}_outbox_#{c}" do config[c] end
         end
 
-        define_method "#{config[:name]}_outbox_key" do "wave:#{config[:name]}:outbox:#{send("#{config[:name]}_outbox_id")}" end
+        define_method "#{name}_outbox_key" do "wave:#{name}:outbox:#{send("#{name}_outbox_id")}" end
 
         class_eval <<-RUBY
-          def #{config[:name]}_outbox
+          def #{name}_outbox
             @wave_outbox ||= WaveBox::Box.new({
-                                :redis => #{config[:name]}_outbox_redis,
-                                :key => #{config[:name]}_outbox_key,
-                                :expire => #{config[:name]}_outbox_expire,
-                                :max_size => #{config[:name]}_outbox_max_size})
+                                :redis => #{name}_outbox_redis,
+                                :key => #{name}_outbox_key,
+                                :expire => #{name}_outbox_expire,
+                                :max_size => #{name}_outbox_max_size})
           end
         RUBY
 
-        define_method "#{config[:name]}_outbox_id", config[:id]
+        define_method "#{name}_outbox_id", config[:id]
       end
     end
 
