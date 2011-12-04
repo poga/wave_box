@@ -7,7 +7,7 @@ describe WaveBox::GenerateWave do
       class A
         include WaveBox::GenerateWave
 
-        can_generate_wave :id => lambda { self.object_id },
+        can_generate_wave :id => :box_id,
                           :redis => MockRedis.new
       end
     end.must_raise ArgumentError
@@ -18,7 +18,7 @@ describe WaveBox::GenerateWave do
       class A
         include WaveBox::GenerateWave
 
-        can_generate_wave :id => lambda { self.object_id },
+        can_generate_wave :id => :box_id,
                           :name => "message"
       end
     end.must_raise ArgumentError
@@ -35,29 +35,44 @@ describe WaveBox::GenerateWave do
     end.must_raise ArgumentError
   end
 
-  it "Can accept a lambda as redis parameter" do
+  it "Can accept a symbol as redis parameter" do
     class Sender
       include WaveBox::GenerateWave
 
       can_generate_wave :name => "message",
-                        :redis => lambda { MockRedis.new },
+                        :redis => :dynamic_instance,
                         :expire => 60*10,
                         :max_size => 10,
                         # You have to specify a box id which
                         # is unique among all receiver
-                        :id => lambda { self.object_id }
+                        :id => :box_id
+
+      def dynamic_instance
+        return MockRedis.new
+      end
+
+      def box_id
+        object_id
+      end
     end
 
     class Receiver
       include WaveBox::ReceiveWave
 
       can_receive_wave :name => "message",
-                        :redis => lambda { MockRedis.new },
-                        :expire => 60*10,
-                        :max_size => 10,
-                        # You have to specify a box id which
-                        # is unique among all receiver
-                        :id => lambda { self.object_id }
+                       :redis => :dynamic_instance,
+                       :expire => 60*10,
+                       :max_size => 10,
+                       # You have to specify a box id which
+                       # is unique among all receiver
+                       :id => :box_id
+      def dynamic_instance
+        return MockRedis.new
+      end
+
+      def box_id
+        object_id
+      end
     end
 
     s = Sender.new
@@ -81,7 +96,11 @@ describe WaveBox::GenerateWave do
                           :max_size => 10,
                           # You have to specify a box id which
                           # is unique among all receiver
-                          :id => lambda { self.object_id }
+                          :id => :box_id
+
+      def box_id
+        object_id
+      end
       end
 
       @user = User.new
@@ -106,7 +125,11 @@ describe WaveBox::GenerateWave do
                            :max_size => 10,
                            # You have to specify a box id which
                            # is unique among all receiver
-                           :id => lambda { self.object_id }
+                           :id => :box_id
+
+          def box_id
+            object_id
+          end
         end
         @receiver = Receiver.new
         @wave = "foo"
@@ -168,43 +191,53 @@ describe WaveBox::GenerateWave do
   describe "USAGE: can generate multiple waves in a single class" do
     before do
       class MultipleSender
-          include WaveBox::GenerateWave
+        include WaveBox::GenerateWave
 
-          can_generate_wave :name => "message",
-                            :redis => MockRedis.new,
-                            :expire => 60*10,
-                            :max_size => 10,
-                            # You have to specify a box id which
-                            # is unique among all receiver
-                            :id => lambda { self.object_id }
+        can_generate_wave :name => "message",
+                          :redis => MockRedis.new,
+                          :expire => 60*10,
+                          :max_size => 10,
+                          # You have to specify a box id which
+                          # is unique among all receiver
+                          :id => :box_id
 
-          can_generate_wave :name => "stone",
-                            :redis => MockRedis.new,
-                            :expire => 60*10,
-                            :max_size => 10,
-                            # You have to specify a box id which
-                            # is unique among all receiver
-                            :id => lambda { self.object_id }
+        can_generate_wave :name => "stone",
+                          :redis => MockRedis.new,
+                          :expire => 60*10,
+                          :max_size => 10,
+                          # You have to specify a box id which
+                          # is unique among all receiver
+                          :id => :box_id
+
+
+        def box_id
+          object_id
+        end
       end
 
       class MultipleReceiver
-          include WaveBox::ReceiveWave
+        include WaveBox::ReceiveWave
 
-          can_receive_wave :name => "message",
-                           :redis => MockRedis.new,
-                           :expire => 60*10,
-                           :max_size => 10,
-                           # You have to specify a box id which
-                           # is unique among all receiver
-                           :id => lambda { self.object_id }
+        can_receive_wave :name => "message",
+                         :redis => MockRedis.new,
+                         :expire => 60*10,
+                         :max_size => 10,
+                         # You have to specify a box id which
+                         # is unique among all receiver
+                         :id => :box_id
 
-          can_receive_wave :name => "stone",
-                           :redis => MockRedis.new,
-                           :expire => 60*10,
-                           :max_size => 10,
-                           # You have to specify a box id which
-                           # is unique among all receiver
-                           :id => lambda { self.object_id }
+        can_receive_wave :name => "stone",
+                         :redis => MockRedis.new,
+                         :expire => 60*10,
+                         :max_size => 10,
+                         # You have to specify a box id which
+                         # is unique among all receiver
+                         :id => :box_id
+
+
+        def box_id
+          object_id
+        end
       end
 
       @sender = MultipleSender.new

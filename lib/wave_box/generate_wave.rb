@@ -42,17 +42,25 @@ module WaveBox
           define_method "#{name}_outbox_#{c}" do config[c] end
         end
 
-        if config[:redis].is_a? Proc
+        if config[:redis].is_a? Symbol
           class_eval <<-RUBY
             def #{name}_outbox_redis_instance
-              #{name}_outbox_redis.call
+              send( "#{config[:redis]}" )
             end
           RUBY
         else
           define_method "#{name}_outbox_redis_instance" do config[:redis] end
         end
 
-        define_method "#{name}_outbox_id", config[:id]
+        if config[:id].is_a? Symbol
+          class_eval <<-RUBY
+            def #{name}_outbox_id
+              send("#{config[:id]}")
+            end
+          RUBY
+        else
+          define_method "#{name}_outbox_id" do config[:redis] end
+        end
 
         define_method "#{name}_outbox_key" do "wave:#{name}:outbox:#{send("#{name}_outbox_id")}" end
 

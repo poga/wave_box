@@ -26,21 +26,31 @@ module WaveBox
 
         name = config[:name]
 
-        [:redis, :expire, :max_size, :encode].each do |c|
+        [:expire, :max_size, :encode].each do |c|
           define_method "#{name}_inbox_#{c}" do config[c] end
         end
 
-        if config[:redis].is_a? Proc
+        if config[:redis].is_a? Symbol
           class_eval <<-RUBY
             def #{name}_inbox_redis_instance
-              #{name}_inbox_redis.call
+              send("#{config[:redis]}")
             end
           RUBY
         else
           define_method "#{name}_inbox_redis_instance" do config[:redis] end
         end
 
-        define_method "#{config[:name]}_inbox_key" do "wave:#{config[:name]}:inbox:#{send("#{config[:name]}_inbox_id")}" end
+        if config[:id].is_a? Symbol
+          class_eval <<-RUBY
+            def #{name}_inbox_id
+              send("#{config[:id]}")
+            end
+          RUBY
+        else
+          define_method "#{name}_inbox_id" do config[:redis] end
+        end
+
+        define_method "#{name}_inbox_key" do "wave:#{name}:inbox:#{send("#{name}_inbox_id")}" end
 
         class_eval <<-RUBY
           def #{name}_inbox
@@ -52,8 +62,6 @@ module WaveBox
                                   :max_size => #{name}_inbox_max_size})
           end
         RUBY
-
-        define_method "#{name}_inbox_id", config[:id]
       end
     end
 

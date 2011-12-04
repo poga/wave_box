@@ -7,7 +7,7 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        can_receive_wave :id => lambda { self.object_id },
+        can_receive_wave :id => :box_id,
                          :redis => MockRedis.new
       end
     end.must_raise ArgumentError
@@ -18,7 +18,7 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        can_receive_wave :id => lambda { self.object_id },
+        can_receive_wave :id => :box_id,
                          :name => "message"
       end
     end.must_raise ArgumentError
@@ -29,7 +29,7 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        can_receive_wave :redis => MockRedis.new,
+        can_receive_wave :redis => :box_id,
                          :name => "message"
       end
     end.must_raise ArgumentError
@@ -46,15 +46,15 @@ describe WaveBox::ReceiveWave do
                          :max_size => 10,
                          # You have to specify a box id which
                          # is unique among all receiver
-                         :id => lambda { self.object_id }
+                         :id => :box_id
+
+        def box_id
+          object_id
+        end
       end
 
       @user = User.new
       @wave = "foo"
-    end
-
-    it "should save the box id lambda and call it when needed" do
-      @user.message_inbox_id.must_equal @user.object_id
     end
 
     it "should have an inbox" do
