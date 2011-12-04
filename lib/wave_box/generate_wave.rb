@@ -38,7 +38,7 @@ module WaveBox
         raise ArgumentError, "Missing wave name" unless config[:name]
 
         name = config[:name]
-        [:redis, :expire, :max_size].each do |c|
+        [:redis, :expire, :max_size, :encode].each do |c|
           define_method "#{name}_outbox_#{c}" do config[c] end
         end
         define_method "#{name}_outbox_id", config[:id]
@@ -48,6 +48,7 @@ module WaveBox
         class_eval <<-RUBY
           def #{name}_outbox
             @#{name}_outbox ||= WaveBox::Box.new({
+                                :encode => #{name}_outbox_encode,
                                 :redis => #{name}_outbox_redis,
                                 :key => #{name}_outbox_key,
                                 :expire => #{name}_outbox_expire,

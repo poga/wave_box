@@ -8,10 +8,16 @@ module WaveBox
       @max_size = options[:max_size]
       @redis = options[:redis]
       @key = options[:key]
+      @encode = options[:encode]
     end
 
     def push(value, time = Time.now)
-      @redis.zadd(@key, time.to_i, encode(value))
+      if @encode == false
+        v = value
+      else
+        v = encode(value)
+      end
+      @redis.zadd(@key, time.to_i, v)
 
       truncate!
     end
@@ -21,8 +27,13 @@ module WaveBox
     end
 
     def after(time)
-      @redis.zrangebyscore( @key, "(#{time.to_i}", "+inf")
-            .map { |x| decode(x) }
+      items = @redis.zrangebyscore( @key, "(#{time.to_i}", "+inf")
+
+      if @encode == false
+        items
+      else
+        items.map { |x| decode(x) }
+      end
     end
 
     private
@@ -38,7 +49,7 @@ module WaveBox
     end
 
     def truncate!
-      @redis.zremrangebyscore( @key, 0, Time.now - @expire ) if @expire
+      @redis.zremrangebyscore( @key, 0, (Time.now - @expire).to_f ) if @expire
       @redis.zremrangebyrank( @key, 0, -1*(@max_size + 1) ) if @max_size
     end
   end

@@ -26,7 +26,7 @@ module WaveBox
 
         name = config[:name]
 
-        [:redis, :expire, :max_size].each do |c|
+        [:redis, :expire, :max_size, :encode].each do |c|
           define_method "#{name}_inbox_#{c}" do config[c] end
         end
 
@@ -37,6 +37,7 @@ module WaveBox
             @#{name}_inbox ||= WaveBox::Box.new({
                                   :redis => #{name}_inbox_redis,
                                   :key => #{name}_inbox_key,
+                                  :encode => #{name}_inbox_encode,
                                   :expire => #{name}_inbox_expire,
                                   :max_size => #{name}_inbox_max_size})
           end

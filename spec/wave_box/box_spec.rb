@@ -39,17 +39,17 @@ describe WaveBox::Box do
     end
   end
 
-  before do
-    @max_size = 10
-    @expire = 10*60
-    @box_with_limit = WaveBox::Box.new({
+  describe "A box with limit" do
+    before do
+      @max_size = 10
+      @expire = 10*60
+      @box_with_limit = WaveBox::Box.new({
                                     :redis => MockRedis.new,
                                     :key => "test_key",
                                     :expire => @expire,
                                     :max_size => @max_size })
-  end
+    end
 
-  describe "A box with limit" do
     it "should know its limit" do
       @box_with_limit.max_size.must_equal @max_size
       @box_with_limit.expire.must_equal @expire
@@ -65,6 +65,24 @@ describe WaveBox::Box do
       @box_with_limit.push "foo", Time.now - (@expire + 10)
 
       @box_with_limit.size.must_equal 0
+    end
+  end
+
+  describe "A box can be set to not encode items" do
+    before do
+      @box = WaveBox::Box.new({
+                              :redis => MockRedis.new,
+                              :key => "test_key",
+                              :expire => 10*60,
+                              :max_size => 10,
+                              :encode => false})
+    end
+
+    it "should not be able to handle two identical items in a single box" do
+      @box.push("foo")
+      @box.push("foo")
+
+      @box.after(0).size.must_equal 1
     end
   end
 
