@@ -32,7 +32,7 @@ module WaveBox
     end
 
     module ClassMethods
-      def generate_wave(config)
+      def can_generate_wave(config)
         raise ArgumentError, "Missing redis" unless config[:redis]
         raise ArgumentError, "Missing id lambda" unless config[:id]
         raise ArgumentError, "Missing wave name" unless config[:name]
@@ -41,12 +41,13 @@ module WaveBox
         [:redis, :expire, :max_size].each do |c|
           define_method "#{name}_outbox_#{c}" do config[c] end
         end
+        define_method "#{name}_outbox_id", config[:id]
 
         define_method "#{name}_outbox_key" do "wave:#{name}:outbox:#{send("#{name}_outbox_id")}" end
 
         class_eval <<-RUBY
           def #{name}_outbox
-            @wave_outbox ||= WaveBox::Box.new({
+            @#{name}_outbox ||= WaveBox::Box.new({
                                 :redis => #{name}_outbox_redis,
                                 :key => #{name}_outbox_key,
                                 :expire => #{name}_outbox_expire,
@@ -54,7 +55,6 @@ module WaveBox
           end
         RUBY
 
-        define_method "#{name}_outbox_id", config[:id]
       end
     end
 

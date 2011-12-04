@@ -7,8 +7,8 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        receive_wave :id => lambda { self.object_id },
-                     :redis => MockRedis.new
+        can_receive_wave :id => lambda { self.object_id },
+                         :redis => MockRedis.new
       end
     end.must_raise ArgumentError
   end
@@ -18,8 +18,8 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        receive_wave :id => lambda { self.object_id },
-                     :name => "message"
+        can_receive_wave :id => lambda { self.object_id },
+                         :name => "message"
       end
     end.must_raise ArgumentError
   end
@@ -29,8 +29,8 @@ describe WaveBox::ReceiveWave do
       class A
         include WaveBox::ReceiveWave
 
-        receive_wave :redis => MockRedis.new,
-                     :name => "message"
+        can_receive_wave :redis => MockRedis.new,
+                         :name => "message"
       end
     end.must_raise ArgumentError
   end
@@ -40,13 +40,13 @@ describe WaveBox::ReceiveWave do
       class User
         include WaveBox::ReceiveWave
 
-        receive_wave :name => "message",
-                     :redis => MockRedis.new,
-                     :expire => 60*10,
-                     :max_size => 10,
-                     # You have to specify a box id which
-                     # is unique among all receiver
-                     :id => lambda { self.object_id }
+        can_receive_wave :name => "message",
+                         :redis => MockRedis.new,
+                         :expire => 60*10,
+                         :max_size => 10,
+                         # You have to specify a box id which
+                         # is unique among all receiver
+                         :id => lambda { self.object_id }
       end
 
       @user = User.new

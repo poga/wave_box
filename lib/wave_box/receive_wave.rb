@@ -10,7 +10,7 @@ module WaveBox
     end
 
     module ClassMethods
-      def receive_wave(config)
+      def can_receive_wave(config)
         raise ArgumentError, "Missing redis config" unless config[:redis]
         raise ArgumentError, "Missing id lambda" unless config[:id]
         raise ArgumentError, "Missing wave name" unless config[:name]

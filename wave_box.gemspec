@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 require "wave_box/version"
 
 Gem::Specification.new do |s|
-  s.name        = "wave_box"
+  s.name        = "wave-box"
   s.version     = WaveBox::VERSION
   s.authors     = ["Poga Po"]
   s.email       = ["poga.bahamut@gmail.com"]
