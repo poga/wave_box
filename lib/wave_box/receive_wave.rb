@@ -1,5 +1,14 @@
 module WaveBox
   module ReceiveWave
+    def method_missing(method, *args, &block)
+      if method.to_s =~ /received_(\w+)_after/
+        received_after( $1, *args )
+      elsif method.to_s =~ /receive_(\w+)/
+        receive( $1, *args)
+      else
+        super
+      end
+    end
 
     def receive(name, wave, time = Time.now)
       send("#{name}_inbox").push(wave, time)

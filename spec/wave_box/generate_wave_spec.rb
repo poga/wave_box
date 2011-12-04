@@ -196,8 +196,8 @@ describe WaveBox::GenerateWave do
       @sender.generated_message_after(0).size.must_equal 1
       @sender.generated_stone_after(0).size.must_equal 1
 
-      @receiver.received_after("message", 0).size.must_equal 1
-      @receiver.received_after("stone", 0).size.must_equal 1
+      @receiver.received_message_after(0).size.must_equal 1
+      @receiver.received_stone_after(0).size.must_equal 1
     end
   end
 end

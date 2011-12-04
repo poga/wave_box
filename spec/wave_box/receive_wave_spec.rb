@@ -69,7 +69,7 @@ describe WaveBox::ReceiveWave do
     end
 
     it "should have a helper to retrieve inbox after..." do
-      @user.received_after("message", 0).must_equal @user.message_inbox.after(0)
+      @user.received_message_after(0).must_equal @user.message_inbox.after(0)
     end
   end
 end
