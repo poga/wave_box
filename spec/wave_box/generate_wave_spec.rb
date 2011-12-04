@@ -35,6 +35,41 @@ describe WaveBox::GenerateWave do
     end.must_raise ArgumentError
   end
 
+  it "Can accept a lambda as redis parameter" do
+    class Sender
+      include WaveBox::GenerateWave
+
+      can_generate_wave :name => "message",
+                        :redis => lambda { MockRedis.new },
+                        :expire => 60*10,
+                        :max_size => 10,
+                        # You have to specify a box id which
+                        # is unique among all receiver
+                        :id => lambda { self.object_id }
+    end
+
+    class Receiver
+      include WaveBox::ReceiveWave
+
+      can_receive_wave :name => "message",
+                        :redis => lambda { MockRedis.new },
+                        :expire => 60*10,
+                        :max_size => 10,
+                        # You have to specify a box id which
+                        # is unique among all receiver
+                        :id => lambda { self.object_id }
+    end
+
+    s = Sender.new
+    r = Receiver.new
+
+    s.message_outbox.wont_be_nil
+    s.generate_message "foo", r
+
+    s.generated_message_after(0).size.must_equal 1
+    r.received_message_after(0).size.must_equal 1
+  end
+
   describe "A normal generator usage" do
     before do
       class User

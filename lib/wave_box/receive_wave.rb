@@ -30,12 +30,22 @@ module WaveBox
           define_method "#{name}_inbox_#{c}" do config[c] end
         end
 
+        if config[:redis].is_a? Proc
+          class_eval <<-RUBY
+            def #{name}_inbox_redis_instance
+              #{name}_inbox_redis.call
+            end
+          RUBY
+        else
+          define_method "#{name}_inbox_redis_instance" do config[:redis] end
+        end
+
         define_method "#{config[:name]}_inbox_key" do "wave:#{config[:name]}:inbox:#{send("#{config[:name]}_inbox_id")}" end
 
         class_eval <<-RUBY
           def #{name}_inbox
             @#{name}_inbox ||= WaveBox::Box.new({
-                                  :redis => #{name}_inbox_redis,
+                                  :redis => #{name}_inbox_redis_instance,
                                   :key => #{name}_inbox_key,
                                   :encode => #{name}_inbox_encode,
                                   :expire => #{name}_inbox_expire,

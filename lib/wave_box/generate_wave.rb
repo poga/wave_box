@@ -41,6 +41,17 @@ module WaveBox
         [:redis, :expire, :max_size, :encode].each do |c|
           define_method "#{name}_outbox_#{c}" do config[c] end
         end
+
+        if config[:redis].is_a? Proc
+          class_eval <<-RUBY
+            def #{name}_outbox_redis_instance
+              #{name}_outbox_redis.call
+            end
+          RUBY
+        else
+          define_method "#{name}_outbox_redis_instance" do config[:redis] end
+        end
+
         define_method "#{name}_outbox_id", config[:id]
 
         define_method "#{name}_outbox_key" do "wave:#{name}:outbox:#{send("#{name}_outbox_id")}" end
@@ -49,7 +60,7 @@ module WaveBox
           def #{name}_outbox
             @#{name}_outbox ||= WaveBox::Box.new({
                                 :encode => #{name}_outbox_encode,
-                                :redis => #{name}_outbox_redis,
+                                :redis => #{name}_outbox_redis_instance,
                                 :key => #{name}_outbox_key,
                                 :expire => #{name}_outbox_expire,
                                 :max_size => #{name}_outbox_max_size})
