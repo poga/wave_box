@@ -27,7 +27,7 @@ module WaveBox
     end
 
     def after(time)
-      items = @redis.zrangebyscore( @key, "(#{time.to_i}", "+inf")
+      items = @redis.zrangebyscore( @key, "#{time.to_i}", "+inf")
 
       if @encode == false
         items
