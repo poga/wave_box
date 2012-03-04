@@ -171,6 +171,12 @@ describe WaveBox::GenerateWave do
         @user.generated_after("message", 0).must_equal @user.message_outbox.after(0)
       end
 
+      it "can be customized to not save a backup in its outbox in a sepcify call" do
+        @user.generate "message", @wave, @receiver, Time.now, :outbox => false
+
+        @user.message_outbox.after(0).size.must_equal 0
+      end
+
       it "should utilize method_missing to provide some much better api" do
         @user.generate_message @wave, @receiver
 

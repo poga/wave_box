@@ -15,8 +15,8 @@ module WaveBox
       (method =~ /generated_(\w+)_after/) || (method =~ /generate_(\w+)/) || super
     end
 
-    def generate(name, wave, receiver, time = Time.now)
-      send("#{name}_outbox").push wave, time
+    def generate(name, wave, receiver, time = Time.now, options = {})
+      send("#{name}_outbox").push wave, time unless options[:outbox] == false
 
       if receiver.respond_to? :each
         receiver.each do |rec|
