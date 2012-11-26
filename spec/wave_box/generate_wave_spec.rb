@@ -98,9 +98,9 @@ describe WaveBox::GenerateWave do
                           # is unique among all receiver
                           :id => :box_id
 
-      def box_id
-        object_id
-      end
+        def box_id
+          object_id
+        end
       end
 
       @user = User.new
