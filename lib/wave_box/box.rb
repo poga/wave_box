@@ -41,11 +41,15 @@ module WaveBox
     # TODO: Current encode/decode solution sucks,
     # it create too much storage overhead
     def encode(str)
-      "#{str}:#{Time.now.to_i}:#{rand.to_s.to_f}"
+      "#{str}:#{Time.now.to_i}:#{box_counter}"
     end
 
     def decode(str)
       str.split(':')[0..-3].join(':')
+    end
+
+    def box_counter
+      @redis.incr("#{@key}:counter")
     end
 
     def truncate!
