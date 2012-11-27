@@ -48,4 +48,4 @@ A redis-based notification system
 
 ## License
 
-Ruby on Rails is released under the {MIT License}[http://www.opensource.org/licenses/MIT].
+the {MIT License}[http://www.opensource.org/licenses/MIT].
