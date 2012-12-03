@@ -8,7 +8,7 @@ inspired by [Tumblr Staircar](http://engineering.tumblr.com/post/7819252942/stai
 
 * Easy to use
 * Works well with redis presharding
-* Fine grained memory usage control
+* Simple memory usage control
 * Tested in production environment
 
 ## Example
