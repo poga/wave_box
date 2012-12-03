@@ -2,6 +2,15 @@
 
 A redis-based notification system
 
+inspired by [Tumblr Staircar](http://engineering.tumblr.com/post/7819252942/staircar-redis-powered-notifications)
+
+## Features
+
+* Easy to use
+* Works well with redis presharding
+* Fine grained memory usage control
+* Tested in production environment
+
 ## Example
 
 ```ruby
@@ -13,7 +22,9 @@ class User
 
   can_generate_wave :name => "message",
                     :redis => :wave_redis_instance,
+                    # waves with timestamp older than expire will be discarded
                     :expire => 60 * 60 * 24 * 7, # One week
+                    # only store last 20 waves
                     :max_size => 20,
                     :id => :wave_box_id
 
@@ -47,6 +58,12 @@ sender.generated_message_after(0)
 # Find all message waves in receiver's inbox
 receiver.received_message_after(0)
 # => ["hi"]
+```
+
+## Install
+
+```
+gem install wave-box
 ```
 
 ## License
