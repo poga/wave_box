@@ -39,7 +39,7 @@ class User
   end
 
   def wave_box_id
-    object_id
+    self.id
   end
 end
 
