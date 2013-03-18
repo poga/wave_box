@@ -259,7 +259,7 @@ describe WaveBox::GenerateWave do
       @sender.message_outbox_key.wont_equal @sender.stone_outbox_key
     end
 
-    it "Should be able to send multiple type of waves without 
+    it "Should be able to send multiple type of waves without
         conflicting each other" do
       @sender.generate_message "foo", @receiver
       @sender.generated_message_after(0).size.must_equal 1
