@@ -1,6 +1,6 @@
 # WaveBox
 
-A redis-based notification system
+A redis-based messaging system
 
 inspired by [Tumblr Staircar](http://engineering.tumblr.com/post/7819252942/staircar-redis-powered-notifications)
 
@@ -39,7 +39,7 @@ class User
   end
 
   def wave_box_id
-    object_id
+    self.id
   end
 end
 
