@@ -63,7 +63,7 @@ receiver.received_message_after(0)
 ## Install
 
 ```
-gem install wave-box
+gem install wave_box
 ```
 
 ## License
