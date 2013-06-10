@@ -37,6 +37,14 @@ describe WaveBox::Box do
       @box.push "bar", Time.now - 10000
       @box.after(0)[0].must_equal "bar"
     end
+
+    it "should be able to clear everything inside it" do
+      @box.push "foo"
+
+      @box.clear!
+      @box.size.must_equal 0
+    end
+
   end
 
   describe "A box with limit" do

@@ -36,6 +36,10 @@ module WaveBox
       end
     end
 
+    def clear!
+      @redis.del @key
+    end
+
     private
 
     # TODO: Current encode/decode solution sucks,
